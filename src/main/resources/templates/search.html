@@ -5,26 +5,34 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
-    <table border="1" width="300px">
-        <caption><h3>SEARCH PARAMS:</h3></caption>
+<table border="1" width="300px">
+    <caption><h3>SEARCH PARAMS:</h3></caption>
+    <div th:if="${cityId != null && !cityId.isEmpty() }">
         <tr>
             <td>cityId</td>
             <td><p th:text="${cityId}" /></td>
         </tr>
+    </div>
+    <div th:if="${cityName != null && !cityName.isEmpty() }">
         <tr>
             <td>cityName</td>
             <td><p th:text="${cityName}" /></td>
         </tr>
+    </div>
+    <div th:if="${latitude != null && !latitude.isEmpty() }">
         <tr>
             <td>latitude</td>
             <td><p th:text="${latitude}" /></td>
         </tr>
+    </div>
+    <div th:if="${longitude != null && !longitude.isEmpty() }">
         <tr>
             <td>longitude</td>
             <td><p th:text="${longitude}" /></td>
         </tr>
-    </table>
-    <b><p th:text="${weather}" /></b>
+    </div>
+</table>
+<b><p th:text="${weather}" /></b>
 </body>
 <form action="index.html">
     <input type="submit" value="Go back">
