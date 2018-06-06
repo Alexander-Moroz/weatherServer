@@ -54,6 +54,12 @@ public class WeatherController {
         // CITY NAME CHECK
         if (cityName != null && !cityName.isEmpty()) {
             weather = getWeatherForCityName(cityName);
+            if (weather.isEmpty()) {
+                String errorString = "Weather for cityName = " + cityName + " not found";
+                model.addAttribute("errorString", errorString);
+                LOG.warn(errorString);
+                return "exceptionPage";
+            }
             model.addAttribute("cityName", cityName);
             model.addAttribute("weather", weather);
             LOG.info("Search for city name: " + cityName);
