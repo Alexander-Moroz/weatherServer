@@ -1,13 +1,13 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
     <title>Bad request</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
-    <h1><p style="color:#FF0000" th:text="${errorString}"/> </h1>
+    <h1 style="color:#FF0000" th:text="${errorString}" />
 </body>
-<form action="index.html">
+<form th:action="@{/searchForm}">
     <input type="submit" value="Return">
 </form>
 </html>

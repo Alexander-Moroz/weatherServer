@@ -1,9 +1,10 @@
-package weather;
+package weather.services;
 
 import net.aksingh.owmjapis.core.OWM;
 import net.aksingh.owmjapis.model.CurrentWeather;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
+import weather.controllers.WeatherController;
 
 import java.util.Random;
 import java.util.concurrent.*;

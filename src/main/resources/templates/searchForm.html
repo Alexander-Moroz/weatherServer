@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script type="text/javascript">
+        function myFunc() {
+            var s = document.getElementById('notifyUser').innerHTML = "PLEASE WAIT";
+            document.weather.submit();
+        }
+    </script>
+</head>
+<body>
+<h3 th:inline="text">Hey, [[${#httpServletRequest.remoteUser}]]! Enter your search params:</h3>
+<form name="weather" action="/search" th:action="@{/search}" method="post">
+    <table>
+        <tr>
+            <td>City id (number)</td>
+            <td><input name="cityId" type="text"></td>
+        </tr>
+        <tr>
+            <td colspan="2"><b>or</b></td>
+        </tr>
+        <tr>
+            <td>City name</td>
+            <td><input name="cityName" type="text"></td>
+        </tr>
+        <tr>
+            <td colspan="2"><b>or coordinates:</b></td>
+        </tr>
+        <tr>
+            <td>Latitude (-90 to 90)</td>
+            <td><input name="latitude" type="text"></td>
+        </tr>
+        <tr>
+            <td>Longitude (-180 to 180)</td>
+            <td><input name="longitude" type="text"></td>
+        </tr>
+    </table>
+    <input name="userName" type="hidden" th:value="${#httpServletRequest.remoteUser}">
+    <button name="but" onclick="myFunc();">Search</button>
+    <b id="notifyUser"></b>
+</form>
+<br>
+<form th:action="@{/logout}" method="post">
+    <input type="submit" value="Sign out" />
+</form>
+</body>
+</html>
