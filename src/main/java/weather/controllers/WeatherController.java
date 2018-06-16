@@ -1,5 +1,6 @@
 package weather.controllers;
 
+import net.aksingh.owmjapis.model.CurrentWeather;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,6 +26,7 @@ public class WeatherController {
             @RequestParam(value = "longitude", required = false, defaultValue = "") String longitude,
             Model model) {
 
+        CurrentWeather currentWeather;
         String weather;
 
         LOG.info("USER: " + userName + " SEARCH WITH: { id=" + cityId + ", cityName=" + cityName + ", lon=" + longitude + ", lat=" + latitude + "}");
@@ -53,7 +55,10 @@ public class WeatherController {
         // CITY ID CHECK
         try {
             if (cityId != null && !cityId.isEmpty() && Integer.parseInt(cityId) > 0) {
-                weather = weatherService.getWeatherForCityId(cityId);
+                currentWeather = weatherService.getWeather(cityId, null, 0, 0).get();
+                weather = currentWeather == null ? "" : "WEATHER FOR CITY ID (" + cityId + "): \n" + currentWeather.getMainData().getTemp() + "°C " + currentWeather.getWeatherList().get(0).getDescription() + " at " + currentWeather.getCityName() + " now";
+                //weather = weatherService.getWeatherForCityId(cityId);
+
                 LOG.debug("Search for city id: " + cityId);
                 if (weather == null || weather.isEmpty()) {
                     String errorString = "Weather for cityId = " + cityId + " not found";
@@ -80,7 +85,9 @@ public class WeatherController {
         // CITY NAME CHECK
         try {
             if (cityName != null && !cityName.isEmpty()) {
-                weather = weatherService.getWeatherForCityName(cityName);
+                currentWeather = weatherService.getWeather(null, cityName, 0, 0).get();
+                weather = currentWeather == null ? "" : "WEATHER FOR CITY NAME (" + cityName + "): " + currentWeather.getMainData().getTemp() + "°C " + currentWeather.getWeatherList().get(0).getDescription() + " at " + currentWeather.getCityName() + " now";
+                //weather = weatherService.getWeatherForCityName(cityName);
                 LOG.debug("Search for city name: " + cityName);
                 if (weather == null || weather.isEmpty()) {
                     String errorString = "Weather for cityName = " + cityName + " not found";
@@ -108,7 +115,9 @@ public class WeatherController {
                     LOG.warn(errorString);
                     return "exceptionPage";
                 }
-                weather = weatherService.getWeatherForCoordinates(Double.parseDouble(latitude), Double.parseDouble(longitude));
+                currentWeather = weatherService.getWeather(null, null, Double.parseDouble(latitude), Double.parseDouble(longitude)).get();
+                weather = currentWeather == null ? "" : "WEATHER FOR COORDINATES (lat: " + latitude + ", lon: " + longitude + "): " + currentWeather.getMainData().getTemp() + "°C " + currentWeather.getWeatherList().get(0).getDescription() + " at " + currentWeather.getCityName() + " now";
+                //weather = weatherService.getWeatherForCoordinates(Double.parseDouble(latitude), Double.parseDouble(longitude));
                 LOG.debug("Search for coords: lat=" + latitude + ", lon=" + longitude);
                 if (weather == null || weather.isEmpty()) {
                     String errorString = "Weather for coords: lon=" + longitude + " & lat=" + latitude + " not found";
@@ -137,10 +146,12 @@ public class WeatherController {
 
         // DEFAULT
         try {
-            weather = weatherService.getDefaultWeather();
+            currentWeather = weatherService.getWeather("498817", null, 0, 0).get();
+            weather = currentWeather == null ? "" : "NOT FOUND. Default: " + currentWeather.getMainData().getTemp() + "°C " + currentWeather.getWeatherList().get(0).getDescription() + " at " + currentWeather.getCityName() + " now";
+            //weather = weatherService.getDefaultWeather();
             LOG.debug("DEFAULT search");
             if (weather == null || weather.isEmpty()) {
-                String errorString = "Defaul weather not found";
+                String errorString = "Default weather not found";
                 model.addAttribute("errorString", errorString);
                 LOG.error(errorString);
                 return "exceptionPage";

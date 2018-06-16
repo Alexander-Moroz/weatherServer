@@ -1,7 +1,10 @@
 package weather.config;
 
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -18,20 +21,30 @@ import java.util.Set;
 @Configuration
 @EnableWebSecurity
 public class MvcConfig extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
+    private static final Logger LOG = Logger.getLogger(MvcConfig.class);
+
+    @Autowired
+    private Environment environment;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-                .authorizeRequests()
+        if (environment.getProperty("ws.security").equalsIgnoreCase("true")) {
+            http
+                    .authorizeRequests()
                     .antMatchers("/login").permitAll()
                     .anyRequest().authenticated()
                     .and()
-                .formLogin()
+                    .formLogin()
                     .loginPage("/login")
                     .permitAll()
                     .and()
-                .logout()
+                    .logout()
                     .permitAll();
+            LOG.debug("SECURITY ENABLED");
+        } else {
+            http.csrf().disable();
+            LOG.debug("SECURITY DISABLED");
+        }
     }
 
     @Override
@@ -49,28 +62,28 @@ public class MvcConfig extends WebSecurityConfigurerAdapter implements WebMvcCon
     protected UserDetailsService userDetailsService() {
         Set<UserDetails> users = new HashSet<>();
         users.add(User.withDefaultPasswordEncoder()
-                    .username("user1")
-                    .password("p")
-                    .roles("USER")
-                    .build());
+                .username("user1")
+                .password("p")
+                .roles("USER")
+                .build());
 
         users.add(User.withDefaultPasswordEncoder()
-                    .username("user2")
-                    .password("p")
-                    .roles("USER")
-                    .build());
+                .username("user2")
+                .password("p")
+                .roles("USER")
+                .build());
 
         users.add(User.withDefaultPasswordEncoder()
-                    .username("user3")
-                    .password("p")
-                    .roles("USER")
-                    .build());
+                .username("user3")
+                .password("p")
+                .roles("USER")
+                .build());
 
         users.add(User.withDefaultPasswordEncoder()
-                    .username("user4")
-                    .password("p")
-                    .roles("USER")
-                    .build());
+                .username("user4")
+                .password("p")
+                .roles("USER")
+                .build());
 
         return new InMemoryUserDetailsManager(users);
     }
