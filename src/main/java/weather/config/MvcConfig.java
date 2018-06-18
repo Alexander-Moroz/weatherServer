@@ -1,10 +1,10 @@
 package weather.config;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -23,12 +23,12 @@ import java.util.Set;
 public class MvcConfig extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
     private static final Logger LOG = Logger.getLogger(MvcConfig.class);
 
-    @Autowired
-    private Environment environment;
+    @Value("${ws.security}")
+    private String security;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        if (environment.getProperty("ws.security").equalsIgnoreCase("true")) {
+        if (!StringUtils.isEmpty(security) && security.equalsIgnoreCase("true")) {
             http
                     .authorizeRequests()
                     .antMatchers("/login").permitAll()

@@ -1,6 +1,7 @@
 package weather.controllers;
 
 import net.aksingh.owmjapis.model.CurrentWeather;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -10,9 +11,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import weather.services.WeatherService;
 
-@Controller
+@Controller("/")
 public class WeatherController {
     private static final Logger LOG = Logger.getLogger(WeatherController.class);
+    private static final int LATITUDE_MIN = -90;
+    private static final int LATITUDE_MAX = 90;
+    private static final int LONGITUDE_MIN = -180;
+    private static final int LONGITUDE_MAX = 180;
 
     @Autowired
     WeatherService weatherService;
@@ -31,7 +36,7 @@ public class WeatherController {
 
         LOG.info("USER: " + userName + " SEARCH WITH: { id=" + cityId + ", cityName=" + cityName + ", lon=" + longitude + ", lat=" + latitude + "}");
 
-        if (userName == null || userName.isEmpty()) {
+        if (!StringUtils.isEmpty(userName)) {
             String errorString = "NOT AUTHORIZED";
             LOG.warn(errorString);
             model.addAttribute("errorString", errorString);
@@ -44,20 +49,18 @@ public class WeatherController {
         }
 
         // ALL PARAMS CHECK
-        if ((cityId == null || cityId.isEmpty()) && (cityName == null || cityName.isEmpty()) && ((latitude == null || latitude.isEmpty()) && (longitude == null || longitude.isEmpty()))) {
+        if ((StringUtils.isEmpty(cityId)) && (StringUtils.isEmpty(cityName)) && (StringUtils.isEmpty(latitude) && (StringUtils.isEmpty(longitude)))) {
             String errorString = "All params are empty";
             LOG.warn(errorString);
             model.addAttribute("errorString", errorString);
-
             return "exceptionPage";
         }
 
         // CITY ID CHECK
         try {
-            if (cityId != null && !cityId.isEmpty() && Integer.parseInt(cityId) > 0) {
+            if (!StringUtils.isEmpty(cityId) && Integer.parseInt(cityId) > 0) {
                 currentWeather = weatherService.getWeather(cityId, null, 0, 0).get();
                 weather = currentWeather == null ? "" : "WEATHER FOR CITY ID (" + cityId + "): \n" + currentWeather.getMainData().getTemp() + "°C " + currentWeather.getWeatherList().get(0).getDescription() + " at " + currentWeather.getCityName() + " now";
-                //weather = weatherService.getWeatherForCityId(cityId);
 
                 LOG.debug("Search for city id: " + cityId);
                 if (weather == null || weather.isEmpty()) {
@@ -84,12 +87,11 @@ public class WeatherController {
 
         // CITY NAME CHECK
         try {
-            if (cityName != null && !cityName.isEmpty()) {
+            if (!StringUtils.isEmpty(cityName)) {
                 currentWeather = weatherService.getWeather(null, cityName, 0, 0).get();
                 weather = currentWeather == null ? "" : "WEATHER FOR CITY NAME (" + cityName + "): " + currentWeather.getMainData().getTemp() + "°C " + currentWeather.getWeatherList().get(0).getDescription() + " at " + currentWeather.getCityName() + " now";
-                //weather = weatherService.getWeatherForCityName(cityName);
                 LOG.debug("Search for city name: " + cityName);
-                if (weather == null || weather.isEmpty()) {
+                if (StringUtils.isEmpty(weather)) {
                     String errorString = "Weather for cityName = " + cityName + " not found";
                     model.addAttribute("errorString", errorString);
                     LOG.warn(errorString);
@@ -108,8 +110,8 @@ public class WeatherController {
 
         // COORDS CHECK
         try {
-            if (latitude != null && !latitude.isEmpty() && longitude != null && !longitude.isEmpty()) {
-                if (Double.parseDouble(latitude) < -90 || Double.parseDouble(latitude) > 90 || Double.parseDouble(longitude) < -180 || Double.parseDouble(longitude) > 180) {
+            if (!StringUtils.isEmpty(latitude) && !StringUtils.isEmpty(longitude)) {
+                if (Double.parseDouble(latitude) < LATITUDE_MIN || Double.parseDouble(latitude) > LATITUDE_MAX || Double.parseDouble(longitude) < LONGITUDE_MIN || Double.parseDouble(longitude) > LONGITUDE_MAX) {
                     String errorString = "Bad coords: lon=" + longitude + "(min -180, max 180) & lat=" + latitude + "(min -90, max 90)";
                     model.addAttribute("errorString", errorString);
                     LOG.warn(errorString);
@@ -117,7 +119,6 @@ public class WeatherController {
                 }
                 currentWeather = weatherService.getWeather(null, null, Double.parseDouble(latitude), Double.parseDouble(longitude)).get();
                 weather = currentWeather == null ? "" : "WEATHER FOR COORDINATES (lat: " + latitude + ", lon: " + longitude + "): " + currentWeather.getMainData().getTemp() + "°C " + currentWeather.getWeatherList().get(0).getDescription() + " at " + currentWeather.getCityName() + " now";
-                //weather = weatherService.getWeatherForCoordinates(Double.parseDouble(latitude), Double.parseDouble(longitude));
                 LOG.debug("Search for coords: lat=" + latitude + ", lon=" + longitude);
                 if (weather == null || weather.isEmpty()) {
                     String errorString = "Weather for coords: lon=" + longitude + " & lat=" + latitude + " not found";
@@ -130,7 +131,7 @@ public class WeatherController {
                 model.addAttribute("weather", weather);
                 LOG.info("USER: " + userName + " GET WEATHER: " + weather);
                 return "search";
-            } else if ((latitude == null || latitude.isEmpty()) && (longitude != null && !longitude.isEmpty()) || ((longitude == null || longitude.isEmpty()) && (latitude != null && !latitude.isEmpty()))) {
+            } else if ((StringUtils.isEmpty(latitude) && !StringUtils.isEmpty(longitude)) || (StringUtils.isEmpty(longitude) && !StringUtils.isEmpty(latitude))) {
                 throw new NumberFormatException();
             }
         } catch (NumberFormatException e) {
@@ -148,9 +149,8 @@ public class WeatherController {
         try {
             currentWeather = weatherService.getWeather("498817", null, 0, 0).get();
             weather = currentWeather == null ? "" : "NOT FOUND. Default: " + currentWeather.getMainData().getTemp() + "°C " + currentWeather.getWeatherList().get(0).getDescription() + " at " + currentWeather.getCityName() + " now";
-            //weather = weatherService.getDefaultWeather();
             LOG.debug("DEFAULT search");
-            if (weather == null || weather.isEmpty()) {
+            if (StringUtils.isEmpty(weather)) {
                 String errorString = "Default weather not found";
                 model.addAttribute("errorString", errorString);
                 LOG.error(errorString);

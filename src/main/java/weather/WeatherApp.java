@@ -1,30 +1,25 @@
 package weather;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.env.Environment;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-@SpringBootApplication
 @EnableAsync
+@SpringBootApplication
 public class WeatherApp {
     private static final Logger LOG = Logger.getLogger(WeatherApp.class);
 
-    @Autowired
-    private Environment environment;
-
     @Bean(name = "weatherSiteApiExecutor")
-    public TaskExecutor threadPoolTaskExecutor() {
-        String threadNamePrefix = environment.getProperty("ws.thread.prefix");
-        int corePoolSize = Integer.parseInt(environment.getProperty("ws.thread.core-pool"));
-        int maxPoolSize = Integer.parseInt(environment.getProperty("ws.thread.max-pool"));
-        int queueCapacity = Integer.parseInt(environment.getProperty("ws.queue.capacity"));
-        int threadTimeout = Integer.parseInt(environment.getProperty("ws.thread.timeout"));
+    public TaskExecutor threadPoolTaskExecutor(@Value("${ws.thread.prefix}") String threadNamePrefix,
+                                               @Value("${ws.thread.core-pool}") int corePoolSize,
+                                               @Value("${ws.thread.max-pool}") int maxPoolSize,
+                                               @Value("${ws.queue.capacity}") int queueCapacity,
+                                               @Value("${ws.thread.timeout}") int threadTimeout) {
 
         ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
         threadPoolTaskExecutor.setThreadNamePrefix(threadNamePrefix);
