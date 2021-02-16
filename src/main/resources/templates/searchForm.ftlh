@@ -1,7 +1,8 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<#import "/spring.ftl" as spring />
+
+<html>
 <head>
-    <title>Getting Started: Serving Web Content</title>
+    <title>Search form</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <script type="text/javascript">
         function myFunc() {
@@ -11,8 +12,8 @@
     </script>
 </head>
 <body>
-<h3 th:inline="text">Hey, [[${#httpServletRequest.remoteUser}]]! Enter your search params:</h3>
-<form name="weather" action="/search" th:action="@{/search}" method="post">
+<h3>Hey, ${httpServletRequest.remoteUser!anonymous}! Enter your search params:</h3>
+<form name="weather" action="<@spring.url '/searchResult' />" method="post">
     <table>
         <tr>
             <td>City id (number)</td>
@@ -37,13 +38,15 @@
             <td><input name="longitude" type="text"></td>
         </tr>
     </table>
-    <input name="userName" type="hidden" th:value="${#httpServletRequest.remoteUser}">
+    <input name="userName" type="hidden" value="${httpServletRequest.remoteUser!anonymous}">
+    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
     <button name="but" onclick="myFunc();">Search</button>
     <b id="notifyUser"></b>
 </form>
 <br>
-<form th:action="@{/logout}" method="post">
+<form action="<@spring.url '/logout' />" method="post">
     <input type="submit" value="Sign out" />
+    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 </form>
 </body>
 </html>

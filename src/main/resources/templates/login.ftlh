@@ -1,15 +1,20 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<#import "/spring.ftl" as spring/>
+
+<html>
 <head>
     <meta charset="UTF-8">
     <title>Login page</title>
 </head>
 <body>
-    <div th:if="${param.error}"><b style="color:#FF0000">Invalid username & password.</b></div>
-    <div th:if="${param.logout}"><b>You have logged out.</b></div>
+    <#if RequestParameters.error??>
+        <div><b style="color:#FF0000">Invalid username & password.</b></div>
+    </#if>
+    <#if RequestParameters.logout??>
+        <div><b>You have logged out.</b></div>
+    </#if>
     <p>Try credentials: (user1/p), (user2/p), (user3/p), (user4/p)</p>
     <br>
-    <form th:action="@{/login}" method="post">
+    <form action="login" method="post">
         <table>
             <tr>
                 <td>User name</td>
@@ -21,6 +26,7 @@
             </tr>
         </table>
         <div><input type="submit" value="Sign In" /></div>
+        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
     </form>
 </body>
 </html>

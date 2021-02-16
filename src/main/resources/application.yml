@@ -1,0 +1,11 @@
+# http://yysource.com/2016/05/spring-boot-executing-asynchronous-method-backed-with-a-queue/
+# thread pool and queue size for processing weather api requests data
+ws:
+  appid: 07cb39d0d64307ac8862d0136a00bd0e
+  # if true security & csrf enabled
+  security-enabled: true
+  thread-name-prefix: AsyncTaskExecutorThread-
+  keep-alive-seconds: 300
+  core-pool-size: 10
+  max-pool-size: 10
+  queue-capacity: 1000

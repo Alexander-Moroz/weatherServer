@@ -1,0 +1,48 @@
+plugins {
+    id 'java'
+    id 'idea'
+    id "io.freefair.lombok" version "5.3.0"
+    id 'org.springframework.boot' version '2.4.2'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'pmd'
+}
+
+group 'com.amoroz'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = JavaVersion.VERSION_11
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+ext {
+    owmClientVersion = "2.5.3.0"
+}
+
+dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-freemarker")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation("net.aksingh:owm-japis:${owmClientVersion}")
+
+    compileOnly("org.springframework.boot:spring-boot-devtools")
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+}
+
+pmd {
+    consoleOutput = true
+    toolVersion = '6.26.0'
+    rulePriority = 5
+    ruleSets = [
+            "category/java/errorprone.xml",
+            "category/java/bestpractices.xml"
+    ]
+}
+
+test {
+    useJUnitPlatform()
+}
